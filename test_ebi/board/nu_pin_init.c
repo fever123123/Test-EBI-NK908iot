@@ -94,6 +94,18 @@ static void nu_pin_usbh_init(void)
 {
 }
 
+static void nu_pin_ebi_init(void)
+{
+    /*set clock bit*/
+    outpw(REG_CLK_HCLKEN, inpw(REG_CLK_HCLKEN) | 0x202);
+    /* PC[0~15]:EBI_DATA[0~15]  MPF1*/
+    outpw(REG_SYS_GPC_MFPL, 0x11111111);
+    outpw(REG_SYS_GPC_MFPH, 0x11111111);
+    /* PA[7~12]:EBI_nWE,EBI_nRE,EBI_nCS0,EBI_ADDR[8~10]  MPF1*/
+    outpw(REG_SYS_GPA_MFPL, (inpw(REG_SYS_GPA_MFPL) & ~0xF0000000L) | 0x10000000);
+    outpw(REG_SYS_GPA_MFPH, (inpw(REG_SYS_GPA_MFPH) & ~0x000FFFFF ) | 0x00011111);
+}
+
 void nu_pin_init(void)
 {
     nu_pin_uart_init();
@@ -111,6 +123,8 @@ void nu_pin_init(void)
 #endif
 
     nu_pin_usbh_init();
+
+    nu_pin_ebi_init();
 }
 
 void nu_pin_deinit(void)
